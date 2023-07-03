@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message page</title>
+</head>
+<body>
+    <div>
+        <form action="/" method="post" onsubmit="save()">
+            <input type="text" id="msg" placeholder="Please Enter the message" name="message">
+            <button type="submit">Send message</button>
+        </form>
+    </div>
+    <script>
+        const name=localStorage.getItem('name');
+        const msg=document.getElementById('msg');
+        msg.setAttribute('name',`${name}`);
+    </script>
+</body>
+</html>
