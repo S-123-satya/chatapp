@@ -5,35 +5,52 @@ const bodyParser = require('body-parser');
 
 const loginPage = path.join(__dirname, '/login.html');
 const homePage = path.join(__dirname, '/home.html');
+
 const app = express();
 
 app.use(bodyParser.urlencoded({extended:false}));
 
 app.get('/', (req, res) => {
-
-    // fs.appendFileSync(`${__dirname}/msg.txt`,req.body);
-    res.sendFile(homePage, () => console.log('home page render'));
+    res.send(`<form action="/" method="post" >
+    <input type="text" id="msg" placeholder="Please Enter the message" name="message">
+    <button type="submit">Send message</button>
+    </form>`)
 })
 app.get('/login', (req, res) => {
-    // if(req.body.message)
-    // res.sendFile(`${__dirname}/msg.txt`,()=>console.log('message send'));
-    // res.sendFile(`${__dirname}/msg.txt`,()=>console.log('message send'));
-    res.sendFile(loginPage, () => console.log('login page render'));
+    res.send(`
+            <form onsubmit="save()" action="/" method="post">
+                <input type="text" name="userName" id="msg" placeholder="Enter the user name">
+                <button id="btn" type="submit">Create</button>
+            </form>
+            <script>
+                const btn=document.getElementById('btn');
+                btn.addEventListener('click',(e)=>{
+                    
+                    const msg=document.getElementById('msg');
+                    console.log('hi');
+                    localStorage.setItem('name',msg.value);
+                });
+            </script>
+        `)
 })
 
 app.post('/',(req,res,next)=>{
     console.log(req.body);
-    const namearr=Object.keys(req.body);
-    console.log(namearr);
-    const name=namearr[0];
-    console.log(name);
-    if(req.body.message)
-        fs.appendFileSync(`${__dirname}/msg.txt`,`${name}=${req.body}.${name} `);
-    else
-        fs.appendFileSync(`${__dirname}/msg.txt`,req.body.userName);
-    res.sendFile(`${__dirname}/msg.txt`,()=>console.log('message send'));
-    // res.sendFile(homePage, () => console.log('home page render'));
-})
+    if(req.body.message )
+    fs.appendFileSync(`${__dirname}/msg.txt`,` ${req.body.userName} = ${req.body.message},`);
+    const data=fs.readFileSync(`${__dirname}/msg.txt`);
+        res.send(`<div> 
+                    ${data}
+                </div>
+        <form action="/" onsubmit="save()" method="post" >
+        <input type="text" id="msg" placeholder="Please Enter the message" name="message">
+        <button type="submit">Send message</button>
+        <input type="text" id="user" style="visibility: hidden;" value=${req.body.userName} name="userName">
+        </form>
+        `)
+        req.body='';
+
+});
 
 app.listen(3000, () => {
     console.log('listening on port 3000');
